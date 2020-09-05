@@ -60,7 +60,7 @@ fun BackdropFrontLayer(
     backdropState: SwipeableState<FullScreenState> =
         rememberSwipeableState(FullScreenState.Expanded),
     staticChildren: @Composable (Modifier) -> Unit,
-    backdropChildren: @Composable (Modifier) -> Unit
+    backdropChildren: @Composable (Modifier, backdropState: FullScreenState) -> Unit
 ) {
     var backgroundChildrenSize by remember { mutableStateOf(IntSize(0, 0)) }
 
@@ -68,8 +68,7 @@ fun BackdropFrontLayer(
         // Use ConstraintLayout in the future when
         // https://issuetracker.google.com/159103817 is fixed
         WithConstraints {
-            val fullHeight = constraints.maxHeight.toFloat()
-            val anchors = getAnchors(backgroundChildrenSize, fullHeight)
+            val anchors = getAnchors(backgroundChildrenSize)
             Stack(
                 Modifier.swipeable(
                     state = backdropState,
@@ -88,21 +87,14 @@ fun BackdropFrontLayer(
                     }
                 )
 
-                val shadowColor = AdoptmeTheme.colors.uiBackground
-                val revealValue = backgroundChildrenSize.height / 2
-                if (backdropState.offset.value < revealValue) {
-                    Canvas(Modifier.fillMaxSize()) {
-                        drawRect(size = size, color = shadowColor)
-                    }
-                }
-
                 val yOffset = with(DensityAmbient.current) {
                     backdropState.offset.value.toDp()
                 }
 
                 backdropChildren(
                     Modifier.offset(0.dp, yOffset)
-                        .preferredSizeIn(currentConstraints(constraints))
+                        .preferredSizeIn(currentConstraints(constraints)),
+                    backdropState.value
                 )
             }
         }
@@ -117,8 +109,7 @@ private fun currentConstraints(pxConstraints: Constraints): DpConstraints {
 }
 
 private fun getAnchors(
-    searchChildrenSize: IntSize,
-    fullHeight: Float
+    searchChildrenSize: IntSize
 ): Map<Float, FullScreenState> {
     val mediumValue = searchChildrenSize.height.toFloat()
     return mapOf(

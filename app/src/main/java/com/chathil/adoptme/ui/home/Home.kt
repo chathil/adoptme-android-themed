@@ -3,6 +3,7 @@ package com.chathil.adoptme.ui.home
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.Colors
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
@@ -27,10 +28,7 @@ import com.chathil.adoptme.model.fake
 import com.chathil.adoptme.model.fakes
 import com.chathil.adoptme.model.image
 import com.chathil.adoptme.ui.AdoptmeAppState
-import com.chathil.adoptme.ui.components.AdoptmeScaffold
-import com.chathil.adoptme.ui.components.AdoptmeSurface
-import com.chathil.adoptme.ui.components.BackdropFrontLayer
-import com.chathil.adoptme.ui.components.CircleImage
+import com.chathil.adoptme.ui.components.*
 import com.chathil.adoptme.ui.theme.AdoptmeTheme
 import com.chathil.adoptme.ui.theme.AlphaNearTransparent
 import com.chathil.adoptme.ui.theme.padding
@@ -58,23 +56,31 @@ fun HomeScreen(
             AlphaNearTransparent
         )
     )
-    BackdropFrontLayer(staticChildren = {
-        AdoptmeSurface(
-            modifier = it.fillMaxWidth().height(216.dp),
-            color = AdoptmeTheme.colors.uiBackground
-        ) {
-            Image(asset = imageResource(id = R.drawable.animal_shelter))
+    BackdropFrontLayer(staticChildren = { modifier ->
+        Column(modifier = modifier.background(AdoptmeTheme.colors.uiBackground)) {
+            Spacer(
+                modifier = Modifier
+                    .statusBarsPadding().background(AdoptmeTheme.colors.uiBackground)
+            )
+            AccountSection(
+                name = "Chathil",
+                Modifier.padding(padding)
+            ) { onAccountClicked() }
+            Image(
+                asset = imageResource(id = R.drawable.animal_shelter),
+                modifier = Modifier.fillMaxWidth().height(216.dp)
+            )
         }
-    }) {
+    }) { modifier, state ->
         val columnScroll = rememberScrollState()
         val rowScroll = rememberScrollState()
         Body(
-            it,
-            columnScroll,
-            onAccountClicked,
-            rowScroll,
-            appState,
-            onPetSelected
+            modifier = modifier,
+            columnScroll = columnScroll,
+            isColumnScrollEnabled = state == FullScreenState.Expanded,
+            rowScroll = rowScroll,
+            appState = appState,
+            onPetSelected = onPetSelected
         )
     }
 }
@@ -83,7 +89,7 @@ fun HomeScreen(
 private fun Body(
     modifier: Modifier = Modifier,
     columnScroll: ScrollState,
-    onAccountClicked: () -> Unit = {},
+    isColumnScrollEnabled: Boolean = true,
     rowScroll: ScrollState,
     appState: AdoptmeAppState,
     onPetSelected: (Int) -> Unit = {}
@@ -91,21 +97,18 @@ private fun Body(
     AdoptmeSurface(
         modifier = modifier.fillMaxSize(),
         color = AdoptmeTheme.colors.uiBackground,
-        shape = RectangleShape
+        shape = RectangleShape,
+        elevation = 8.dp
     ) {
         ScrollableColumn(
             scrollState = columnScroll,
+            isScrollEnabled = isColumnScrollEnabled
         ) {
             Spacer(
                 modifier = Modifier
                     .statusBarsPadding()
                     .preferredHeight(padding)
             )
-            AccountSection(
-                name = "Chathil",
-                modifier.padding(horizontal = padding)
-            ) { onAccountClicked() }
-            Spacer(modifier = Modifier.height(padding))
             ScrollableRow(scrollState = rowScroll) {
                 appState.pets.forEachIndexed { index, pet ->
                     FeaturedPetCard(
