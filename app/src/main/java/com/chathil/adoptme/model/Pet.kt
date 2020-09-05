@@ -71,7 +71,7 @@ val Pet.Companion.fake: Pet
         1,
         "Fake 1",
         Pet.Type.CAT,
-        "This is a cat, not a dog",
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam",
         false,
         true,
         Pet.Size.M,

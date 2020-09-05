@@ -23,7 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.savedinstancestate.rememberSavedInstanceState
 import com.chathil.adoptme.ui.account.Account
 import com.chathil.adoptme.ui.detail.PetDetail
-import com.chathil.adoptme.ui.home.Home
+import com.chathil.adoptme.ui.home.HomeScreen
 import com.chathil.adoptme.ui.theme.AdoptmeTheme
 import com.example.jetsnack.ui.utils.Navigator
 import com.example.jetsnack.ui.utils.ProvideDisplayInsets
@@ -42,7 +42,7 @@ fun AdoptmeApp(backDispatcher: OnBackPressedDispatcher, appState: AdoptmeAppStat
             Crossfade(navigator.current) { destination ->
                 when (destination) {
                     Destination.Home -> {
-                        Home(actions.selectPet, actions.openAccount, appState)
+                        HomeScreen(actions.selectPet, actions.openAccount, appState)
                     }
                     is Destination.PetDetail -> PetDetail(
                         petIndex = destination.petIndex,
